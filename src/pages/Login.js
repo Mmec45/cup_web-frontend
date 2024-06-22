@@ -1,16 +1,24 @@
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { login } from '../redux/auth/authActions';
+import { Navigate, Link } from 'react-router-dom';
 
 const LoginPage = () => {
   const dispatch = useDispatch();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const authError = useSelector((state) => state.auth.error);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const user = useSelector((state) => state.auth.user);
 
   const handleLogin = () => {
     dispatch(login(username, password));
   };
+
+  if (isAuthenticated && user?.role === 'admin') {
+    localStorage.setItem('token', user.token);
+    return <Navigate to="/dashboard" />;
+  }
 
   return (
     <div className="flex justify-center items-center h-screen bg-gray-100">
@@ -37,6 +45,9 @@ const LoginPage = () => {
         >
           Login
         </button>
+        <Link to="/" className="block mt-4 text-blue-500 hover:underline text-center">
+          Retour à la page shop
+        </Link>
       </div>
     </div>
   );
